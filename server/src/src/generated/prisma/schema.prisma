@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String       @id @default(cuid())
+  email       String       @unique
+  savedJobs   SavedJob[]
+  appliedJobs AppliedJob[]
+}
+
+model Job {
+  id               String       @id @default(cuid())
+  company          String
+  job_title        String
+  experience       String
+  job_location     String
+  job_type         String
+  work_setting     String
+  salary           Int
+  date_posted      DateTime
+  h1Type           String
+  job_link         String
+  experience_level String
+  full_description String
+  job_category     String
+  savedBy          SavedJob[]
+  appliedBy        AppliedJob[]
+}
+
+model SavedJob {
+  id     String @id @default(cuid())
+  userId String
+  jobId  String
+
+  user User @relation(fields: [userId], references: [id])
+  job  Job  @relation(fields: [jobId], references: [id])
+
+  @@unique([userId, jobId])
+}
+
+model AppliedJob {
+  id     String @id @default(cuid())
+  userId String
+  jobId  String
+
+  user User @relation(fields: [userId], references: [id])
+  job  Job  @relation(fields: [jobId], references: [id])
+
+  @@unique([userId, jobId])
+}
