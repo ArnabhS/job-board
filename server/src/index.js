@@ -3,6 +3,7 @@ import cors from "cors"
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import userRouter from "./routes/user.routes.js"
+import jobsRouter from "./routes/jobs.router.js"
 
 dotenv.config();
 
@@ -15,6 +16,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 app.use('/api/users', userRouter)
+app.use('/api/jobs', jobsRouter)
 
 
 
