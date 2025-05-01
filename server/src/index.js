@@ -12,7 +12,20 @@ const app = express();
 
 
 
-app.use(cors());
+app.use(
+    cors({
+    origin: [ process.env.CORS_ORIGIN || "*" ], 
+    credentials: true, 
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: [
+    "Origin",
+    "Content-Type",
+    "Accept",
+    "Authorization",
+    "X-Request-With",
+    ],
+    })
+    );
 app.use(bodyParser.json());
 
 app.use('/api/users', userRouter)
