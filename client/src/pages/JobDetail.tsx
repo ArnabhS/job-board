@@ -25,6 +25,8 @@ export default function JobDetailPage() {
   const [loading, setLoading] = useState(false);
   const authFetch = useClerkAuthFetch();
   const { isSignedIn } = useAuth();
+  const [saving, setSaving] = useState(false);
+
   const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
@@ -52,10 +54,13 @@ export default function JobDetailPage() {
     }
 
     try {
+      setSaving(true);
       await authFetch(`${BASE_URL}/api/users/save-job/${id}`, { method: "POST" });
       toast.success("Job saved successfully!");
     } catch {
       toast.error("Failed to save job.");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -93,15 +98,45 @@ export default function JobDetailPage() {
       </p>
 
       <div className="flex gap-4 mb-6">
-        <button
-          onClick={saveJob}
-          className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition"
-        >
-          Save Job
-        </button>
+      <button
+  onClick={saveJob}
+  disabled={saving}
+  className={`flex items-center gap-2 bg-slate-900 text-white px-6 py-2 rounded-full transition ${
+    saving ? "opacity-70 cursor-not-allowed" : "hover:bg-slate-900"
+  }`}
+>
+  {saving ? (
+    <>
+      <svg
+        className="animate-spin h-4 w-4 text-white"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <circle
+          className="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          strokeWidth="4"
+        ></circle>
+        <path
+          className="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+        ></path>
+      </svg>
+      Saving...
+    </>
+  ) : (
+    "Save Job"
+  )}
+</button>
+
         <button
           onClick={applyJob}
-          className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition"
+          className=" text-gray-800 border-2 border-slate-900 px-6 py-2 rounded-full hover:bg-slate-800 hover:text-white transition"
         >
           Apply Now
         </button>
