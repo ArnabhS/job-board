@@ -81,7 +81,7 @@ export default function JobDetailPage() {
       (job.full_description.length > 300 ? "..." : "");
 
   return (
-    <main className="mt-10 max-w-[90%] mx-auto bg-white">
+    <main className="mt-10 max-w-[90%] mx-auto bg-white font-poppins">
       <Toaster position="top-center" />
       <h1 className="text-3xl font-bold text-gray-900 mb-2">{job.job_title}</h1>
       <p className="text-md text-gray-600 mb-1">

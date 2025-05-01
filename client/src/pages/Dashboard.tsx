@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useClerkAuthFetch } from "../lib/clerkAuthFetch";
 import SavedJobs from "../components/Dashboard/SavedJobs";
 import AppliedJobs from "../components/Dashboard/AppliedJobs";
+import Loader from "../components/common/Loader";
 
 interface Job {
   id: string;
@@ -43,16 +44,16 @@ export default function DashboardPage() {
     loadData();
   }, []);
 
-  if (loading) return <p className="p-6">Loading your jobs...</p>;
+  if (loading) return <Loader/>;
 
   return (
-    <main className="p-6">
+    <main className="p-6 font-poppins">
       <h2 className="text-2xl font-bold mb-6">Your Dashboard</h2>
 
       <div className="flex gap-4 mb-6">
         <button
           onClick={() => setTab("saved")}
-          className={`px-4 py-2 rounded ${
+          className={`px-4 py-2 rounded-full ${
             tab === "saved" ? "bg-black text-white" : "bg-gray-200"
           }`}
         >
@@ -60,7 +61,7 @@ export default function DashboardPage() {
         </button>
         <button
           onClick={() => setTab("applied")}
-          className={`px-4 py-2 rounded ${
+          className={`px-4 py-2 rounded-full ${
             tab === "applied" ? "bg-black text-white" : "bg-gray-200"
           }`}
         >

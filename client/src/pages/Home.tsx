@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import JobCard from "../components/common/JobCard";
 import { useClerkAuthFetch } from "../lib/clerkAuthFetch";
-import FilterSidebar from "../components/common/FilterSidebar";
+import FilterSidebar from "../components/Home/FilterSidebar";
+import Hero from "../components/Home/Hero";
+import Loader from "../components/common/Loader";
 
 interface Job {
   id: string;
@@ -12,8 +14,9 @@ interface Job {
   experience: string;
   experience_level: string;
 }
+
 interface FiltersType {
-  query: string;
+  search: string;
   job_location: string;
   job_type: string;
   experience: string;
@@ -24,10 +27,12 @@ interface FiltersType {
   h1Type: string;
   job_category: string;
 }
+
 export default function Home() {
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState<FiltersType>({
-    query: "",
+    search: "",
     job_location: "",
     job_type: "",
     experience: "",
@@ -41,7 +46,7 @@ export default function Home() {
 
   const clearFilters = () => {
     setFilters({
-      query: "",
+      search: "",
       job_location: "",
       job_type: "",
       experience: "",
@@ -59,28 +64,42 @@ export default function Home() {
 
   useEffect(() => {
     const fetchJobs = async () => {
-      const params = new URLSearchParams({ ...filters });
-      const res = await authFetch(`${BASE_URL}/api/jobs?${params.toString()}`);
-      const json = await res.json();
-      setJobs(json.jobs);
+      setLoading(true);
+      try {
+        const params = new URLSearchParams({ ...filters });
+        const res = await authFetch(`${BASE_URL}/api/jobs?${params.toString()}`);
+        const json = await res.json();
+        setJobs(json.jobs);
+      } catch (err) {
+        console.error("Error fetching jobs:", err);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchJobs();
   }, [filters]);
 
   return (
-    <main className="flex mx-auto  gap-6 p-6 bg-gray-50 min-h-screen w-full max-w-[90%]">
-      <FilterSidebar
-        filters={filters}
-        setFilters={setFilters}
-        clearFilters={clearFilters}
-      />
+    <div>
+      <Hero />
+      <main className="flex mx-auto gap-6 p-6 bg-gray-50 min-h-screen w-full max-w-[90%] font-poppins">
+        <FilterSidebar
+          filters={filters}
+          setFilters={setFilters}
+          clearFilters={clearFilters}
+        />
 
-      <section className=" space-y-4">
-        {jobs.map((job) => (
-          <JobCard key={job.id} job={job} />
-        ))}
-      </section>
-    </main>
+        <section className="flex-1 space-y-4">
+          {loading ? (
+            <Loader />
+          ) : jobs.length === 0 ? (
+            <p className="text-gray-500 mt-4">No jobs found with current filters.</p>
+          ) : (
+            jobs.map((job) => <JobCard key={job.id} job={job} />)
+          )}
+        </section>
+      </main>
+    </div>
   );
 }

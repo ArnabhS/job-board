@@ -2,7 +2,7 @@
 import React from "react";
 
 export interface FiltersType {
-  query: string;
+  search: string;
   job_location: string;
   job_type: string;
   experience: string;
@@ -41,9 +41,9 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
         <input
           className="border p-2 rounded w-full"
           placeholder="Search by title or company"
-          value={filters.query}
+          value={filters.search}
           onChange={(e) =>
-            setFilters((prev) => ({ ...prev, query: e.target.value }))
+            setFilters((prev) => ({ ...prev, search: e.target.value }))
           }
         />
 
