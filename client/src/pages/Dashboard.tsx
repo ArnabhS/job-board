@@ -3,11 +3,8 @@ import { useClerkAuthFetch } from "../lib/clerkAuthFetch";
 import SavedJobs from "../components/Dashboard/SavedJobs";
 import AppliedJobs from "../components/Dashboard/AppliedJobs";
 import Loader from "../components/common/Loader";
+import { Job } from "../types/index";
 
-interface Job {
-  id: string;
-  job_title: string;
-}
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -29,8 +26,12 @@ export default function DashboardPage() {
         const savedJson = await savedRes.json();
         const appliedJson = await appliedRes.json();
 
-        const savedJobs: Job[] = savedJson.savedJobs.map((item: any) => item.job);
-        const appliedJobs: Job[] = appliedJson.appliedJobs.map((item: any) => item.job);
+        const savedJobs: Job[] = savedJson.savedJobs.map(
+          (item: any) => item.job
+        );
+        const appliedJobs: Job[] = appliedJson.appliedJobs.map(
+          (item: any) => item.job
+        );
 
         setSaved(savedJobs);
         setApplied(appliedJobs);
@@ -44,7 +45,7 @@ export default function DashboardPage() {
     loadData();
   }, []);
 
-  if (loading) return <Loader/>;
+  if (loading) return <Loader />;
 
   return (
     <main className="p-6 font-poppins">
@@ -70,7 +71,11 @@ export default function DashboardPage() {
       </div>
 
       {tab === "saved" ? (
-        saved.length === 0 ? <p>No saved jobs yet.</p> : <SavedJobs jobs={saved} />
+        saved.length === 0 ? (
+          <p>No saved jobs yet.</p>
+        ) : (
+          <SavedJobs jobs={saved} />
+        )
       ) : applied.length === 0 ? (
         <p>No applied jobs yet.</p>
       ) : (

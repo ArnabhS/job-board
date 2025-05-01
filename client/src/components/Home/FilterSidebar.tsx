@@ -1,18 +1,5 @@
-
 import React from "react";
-
-export interface FiltersType {
-  search: string;
-  job_location: string;
-  job_type: string;
-  experience: string;
-  experience_level: string;
-  work_setting: string;
-  salary_min: string;
-  salary_max: string;
-  h1Type: string;
-  job_category: string;
-}
+import { FiltersType } from "../../types/index";
 
 interface FilterSidebarProps {
   filters: FiltersType;

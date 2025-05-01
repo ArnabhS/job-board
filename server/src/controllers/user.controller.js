@@ -92,3 +92,28 @@ export const getAppliedJobs = async (req,res) => {
         return res.status(500).json({  success:false , message: 'Internal server error'  });
     }
 };
+
+
+export const checkIfJobSaved = async (req,res)=>{
+  const userId = req.auth.userId;
+  const jobId = req.params.jobId;
+  try {
+    const userExists = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+    if(!userExists){
+      return res.status(404).json({message:"User not found"})
+    }
+    const savedJob = await prisma.savedJob.findFirst({
+      where: {
+        userId,
+        jobId,
+      },
+    });
+    return res.status(200).json({ success:true ,saved: !!savedJob });
+  } catch (error) {
+    console.log(error.message)    
+    return res.status(500).json({  success:false , message: 'Internal server error'  });
+    
+  }
+}

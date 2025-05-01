@@ -1,16 +1,6 @@
 import { Link } from "react-router-dom";
 import { Briefcase, MapPin, DollarSign, BarChart } from "lucide-react"; 
-
-interface Job {
-  id: string;
-  job_title: string;
-  company: string;
-  job_location: string;
-  salary: string;
-  experience: string;
-  experience_level: string;
-}
-
+import { Job } from "../../types/index";
 export default function JobCard({ job }: { job: Job }) {
   return (
     <Link

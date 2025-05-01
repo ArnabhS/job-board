@@ -1,9 +1,6 @@
 import { Link } from "react-router-dom";
+import { Job } from "../../types/index";
 
-interface Job {
-  id: string;
-  job_title: string;
-}
 
 export default function AppliedJobs({ jobs }: { jobs: Job[] }) {
   return (

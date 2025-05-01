@@ -4,19 +4,9 @@ import { useClerkAuthFetch } from "../lib/clerkAuthFetch";
 import { useAuth, RedirectToSignIn } from "@clerk/clerk-react";
 import toast, { Toaster } from "react-hot-toast";
 import Loader from "../components/common/Loader";
+import { getJobById, saveJobById, checkIfJobSaved } from "../services/api";
+import { Job } from "../types/index";
 
-interface Job {
-  id: string;
-  job_title: string;
-  company: string;
-  job_location: string;
-  salary: string;
-  full_description: string;
-  experience?: string;
-  experience_level?: string;
-  job_type?: string;
-  job_link?: string;
-}
 
 export default function JobDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -26,18 +16,20 @@ export default function JobDetailPage() {
   const authFetch = useClerkAuthFetch();
   const { isSignedIn } = useAuth();
   const [saving, setSaving] = useState(false);
-
-  const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+  const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
     const fetchJob = async () => {
       try {
         setLoading(true);
-        const res = await authFetch(`${BASE_URL}/api/jobs/${id}`);
-        const data: Job = await res.json();
-        setJob(data);
+        const jobData = await getJobById(id!, authFetch);
+        setJob(jobData);
+        if (isSignedIn) {
+          const savedStatus = await checkIfJobSaved(id!, authFetch);
+          setIsSaved(savedStatus);
+        }
       } catch (err) {
-        console.error(err)
+        console.error(err);
         toast.error("Failed to fetch job details.");
       } finally {
         setLoading(false);
@@ -45,7 +37,7 @@ export default function JobDetailPage() {
     };
 
     fetchJob();
-  }, [id]);
+  }, [id, isSignedIn]);
 
   const saveJob = async () => {
     if (!isSignedIn) {
@@ -55,7 +47,8 @@ export default function JobDetailPage() {
 
     try {
       setSaving(true);
-      await authFetch(`${BASE_URL}/api/users/save-job/${id}`, { method: "POST" });
+      await saveJobById(id!, authFetch);
+      setIsSaved(true);
       toast.success("Job saved successfully!");
     } catch {
       toast.error("Failed to save job.");
@@ -100,9 +93,9 @@ export default function JobDetailPage() {
       <div className="flex gap-4 mb-6">
       <button
   onClick={saveJob}
-  disabled={saving}
+  disabled={saving || isSaved}
   className={`flex items-center gap-2 bg-slate-900 text-white px-6 py-2 rounded-full transition ${
-    saving ? "opacity-70 cursor-not-allowed" : "hover:bg-slate-900"
+    saving || isSaved ? "opacity-70 cursor-not-allowed" : "hover:bg-slate-900"
   }`}
 >
   {saving ? (
@@ -129,6 +122,8 @@ export default function JobDetailPage() {
       </svg>
       Saving...
     </>
+  ) : isSaved ? (
+    "Saved"
   ) : (
     "Save Job"
   )}

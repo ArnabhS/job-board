@@ -4,29 +4,8 @@ import { useClerkAuthFetch } from "../lib/clerkAuthFetch";
 import FilterSidebar from "../components/Home/FilterSidebar";
 import Hero from "../components/Home/Hero";
 import Loader from "../components/common/Loader";
+import { Job,FiltersType } from "../types/index";
 
-interface Job {
-  id: string;
-  job_title: string;
-  company: string;
-  job_location: string;
-  salary: string;
-  experience: string;
-  experience_level: string;
-}
-
-interface FiltersType {
-  search: string;
-  job_location: string;
-  job_type: string;
-  experience: string;
-  experience_level: string;
-  work_setting: string;
-  salary_min: string;
-  salary_max: string;
-  h1Type: string;
-  job_category: string;
-}
 
 export default function Home() {
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -67,7 +46,9 @@ export default function Home() {
       setLoading(true);
       try {
         const params = new URLSearchParams({ ...filters });
-        const res = await authFetch(`${BASE_URL}/api/jobs?${params.toString()}`);
+        const res = await authFetch(
+          `${BASE_URL}/api/jobs?${params.toString()}`
+        );
         const json = await res.json();
         setJobs(json.jobs);
       } catch (err) {
@@ -94,7 +75,9 @@ export default function Home() {
           {loading ? (
             <Loader />
           ) : jobs.length === 0 ? (
-            <p className="text-gray-500 mt-4">No jobs found with current filters.</p>
+            <p className="text-gray-500 mt-4">
+              No jobs found with current filters.
+            </p>
           ) : (
             jobs.map((job) => <JobCard key={job.id} job={job} />)
           )}
