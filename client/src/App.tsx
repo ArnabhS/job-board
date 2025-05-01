@@ -1,12 +1,37 @@
+import { Route, Routes } from "react-router-dom";
+import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/clerk-react";
+import Header from "./components/common/Header";
+import Home from "./pages/Home";
+import JobDetailPage from "./pages/JobDetail";
+import DashboardPage from "./pages/Dashboard";
 
-function App() {
-  
 
+export default function App() {
   return (
-   <div>
-    Hello World
-   </div>
-  )
+    <>
+      <Header />
+     
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/jobs/:id" element={<JobDetailPage />} />
+        <Route
+  path="/dashboard"
+  element={
+    <SignedIn>
+      <DashboardPage />
+    </SignedIn>
+  } />
+        <Route
+          path="/jobs"
+          element={
+            <SignedOut>
+              <RedirectToSignIn />
+            </SignedOut>
+          }
+        />
+       
+      </Routes>
+      
+    </>
+  );
 }
-
-export default App

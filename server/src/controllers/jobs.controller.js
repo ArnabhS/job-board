@@ -62,3 +62,41 @@ export const getJobById = async (req, res) => {
         return res.status(500).json({ success:false, message: 'Internal server error' });
     }
 };
+
+
+export const uploadJobs = async(req,res)=>{
+  const jobList = req.body;
+
+  if (!Array.isArray(jobList)) {
+    return res.status(400).json({ error: "Request body must be an array of jobs." });
+  }
+
+  try {
+    const insertedJobs = await Promise.all(
+      jobList.map(async (job) => {
+        return prisma.job.create({
+          data: {
+            company: job.company,
+            job_title: job.job_title,
+            experience: job.experience,
+            job_location: job.job_location,
+            job_type: job.job_type,
+            work_setting: job["work setting"],
+            salary: job.salary,
+            date_posted: new Date(job.date_posted),
+            h1Type: job.h1Type,
+            job_link: job.job_link,
+            experience_level: job.experience_level,
+            full_description: job.full_description,
+            job_category: job.job_category,
+          },
+        });
+      })
+    );
+
+    return res.status(201).json({ message: "Jobs uploaded successfully.", data: insertedJobs });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "Failed to upload jobs." });
+  }
+}
