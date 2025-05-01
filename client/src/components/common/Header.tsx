@@ -8,16 +8,20 @@ export default function Header() {
         JobBoard
       </Link>
       <nav className="flex items-center gap-4">
-        <Link to="/dashboard" className="font-medium hover:font-semibold">
-          Dashboard
-        </Link>
+        <SignedIn>
+          <Link to="/dashboard" className="font-medium hover:font-semibold">
+            Dashboard
+          </Link>
+        </SignedIn>
+        
         <SignedOut>
-        <SignInButton mode="modal">
-            <button className="bg-gray-800 text-white px-4 py-2 rounded-full  transition text-sm font-medium shadow">
+          <SignInButton mode="modal">
+            <button className="bg-gray-800 text-white px-4 py-2 rounded-full transition text-sm font-medium shadow">
               Sign In
             </button>
           </SignInButton>
         </SignedOut>
+
         <SignedIn>
           <UserButton />
         </SignedIn>

@@ -4,12 +4,13 @@ import SavedJobs from "../components/Dashboard/SavedJobs";
 import AppliedJobs from "../components/Dashboard/AppliedJobs";
 import Loader from "../components/common/Loader";
 import { Job } from "../types/index";
-
+import { useAuth, RedirectToSignIn } from "@clerk/clerk-react"; 
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 export default function DashboardPage() {
   const authFetch = useClerkAuthFetch();
+  const { isSignedIn, isLoaded } = useAuth();
   const [saved, setSaved] = useState<Job[]>([]);
   const [applied, setApplied] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
@@ -42,8 +43,11 @@ export default function DashboardPage() {
       }
     };
 
-    loadData();
-  }, []);
+    if (isSignedIn) loadData();
+  }, [isSignedIn]);
+
+  
+  if (isLoaded && !isSignedIn) return <RedirectToSignIn />;
 
   if (loading) return <Loader />;
 

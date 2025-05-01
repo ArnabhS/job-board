@@ -5,33 +5,33 @@ import Home from "./pages/Home";
 import JobDetailPage from "./pages/JobDetail";
 import DashboardPage from "./pages/Dashboard";
 
-
 export default function App() {
   return (
     <>
       <Header />
-     
+
       <Routes>
         <Route path="/" element={<Home />} />
+
         <Route path="/jobs/:id" element={<JobDetailPage />} />
+
+       
         <Route
-  path="/dashboard"
-  element={
-    <SignedIn>
-      <DashboardPage />
-    </SignedIn>
-  } />
-        <Route
-          path="/jobs"
+          path="/dashboard"
           element={
-            <SignedOut>
-              <RedirectToSignIn />
-            </SignedOut>
+            <>
+              <SignedIn>
+                <DashboardPage />
+              </SignedIn>
+              <SignedOut>
+                <RedirectToSignIn />
+              </SignedOut>
+            </>
           }
         />
+
        
       </Routes>
-      
     </>
   );
 }

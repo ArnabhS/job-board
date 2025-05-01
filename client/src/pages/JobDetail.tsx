@@ -4,9 +4,14 @@ import { useClerkAuthFetch } from "../lib/clerkAuthFetch";
 import { useAuth, RedirectToSignIn } from "@clerk/clerk-react";
 import toast, { Toaster } from "react-hot-toast";
 import Loader from "../components/common/Loader";
-import { getJobById, saveJobById, checkIfJobSaved } from "../services/api";
+import {
+  getJobById,
+  saveJobById,
+  checkIfJobSaved,
+  checkIfJobApplied,
+  applyJobById,
+} from "../services/api";
 import { Job } from "../types/index";
-
 
 export default function JobDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -16,7 +21,9 @@ export default function JobDetailPage() {
   const authFetch = useClerkAuthFetch();
   const { isSignedIn } = useAuth();
   const [saving, setSaving] = useState(false);
+  const [applying, setApplying] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [isApplied, setIsApplied] = useState(false);
 
   useEffect(() => {
     const fetchJob = async () => {
@@ -25,8 +32,12 @@ export default function JobDetailPage() {
         const jobData = await getJobById(id!, authFetch);
         setJob(jobData);
         if (isSignedIn) {
-          const savedStatus = await checkIfJobSaved(id!, authFetch);
+          const [savedStatus, appliedStatus] = await Promise.all([
+            checkIfJobSaved(id!, authFetch),
+            checkIfJobApplied(id!, authFetch),
+          ]);
           setIsSaved(savedStatus);
+          setIsApplied(appliedStatus);
         }
       } catch (err) {
         console.error(err);
@@ -57,16 +68,25 @@ export default function JobDetailPage() {
     }
   };
 
-  const applyJob = () => {
+  const applyJob = async () => {
     if (!isSignedIn) {
       toast("Please login to apply.");
       return <RedirectToSignIn />;
     }
 
-    if (job?.job_link) {
-      window.open(job.job_link, "_blank");
-    } else {
-      toast.error("No application link available.");
+    try {
+      setApplying(true);
+      await applyJobById(id!, authFetch);
+      setIsApplied(true);
+      toast.success("Job marked as applied!");
+
+      if (job?.job_link) {
+        window.open(job.job_link, "_blank");
+      }
+    } catch {
+      toast.error("Failed to apply to the job.");
+    } finally {
+      setApplying(false);
     }
   };
 
@@ -91,50 +111,62 @@ export default function JobDetailPage() {
       </p>
 
       <div className="flex gap-4 mb-6">
-      <button
-  onClick={saveJob}
-  disabled={saving || isSaved}
-  className={`flex items-center gap-2 bg-slate-900 text-white px-6 py-2 rounded-full transition ${
-    saving || isSaved ? "opacity-70 cursor-not-allowed" : "hover:bg-slate-900"
+        <button
+          onClick={saveJob}
+          disabled={saving || isSaved}
+          className={`flex items-center gap-2 bg-slate-900 text-white px-6 py-2 rounded-full transition ${
+            saving || isSaved
+              ? "opacity-70 cursor-not-allowed"
+              : "hover:bg-slate-900"
+          }`}
+        >
+          {saving ? (
+            <>
+              <svg
+                className="animate-spin h-4 w-4 text-white"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                ></path>
+              </svg>
+              Saving...
+            </>
+          ) : isSaved ? (
+            "Saved"
+          ) : (
+            "Save Job"
+          )}
+        </button>
+
+        <button
+  onClick={applyJob}
+  disabled={applying || isApplied}
+  className={`text-gray-800 border-2 border-slate-900 px-6 py-2 rounded-full transition ${
+    applying || isApplied ? "opacity-70 cursor-not-allowed" : "hover:bg-slate-800 hover:text-white"
   }`}
 >
-  {saving ? (
-    <>
-      <svg
-        className="animate-spin h-4 w-4 text-white"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <circle
-          className="opacity-25"
-          cx="12"
-          cy="12"
-          r="10"
-          stroke="currentColor"
-          strokeWidth="4"
-        ></circle>
-        <path
-          className="opacity-75"
-          fill="currentColor"
-          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-        ></path>
-      </svg>
-      Saving...
-    </>
-  ) : isSaved ? (
-    "Saved"
+  {applying ? (
+    <svg className="animate-spin h-4 w-4 text-gray-800 bg-white" />
+  ) : isApplied ? (
+    "Already Applied"
   ) : (
-    "Save Job"
+    "Apply Now"
   )}
 </button>
 
-        <button
-          onClick={applyJob}
-          className=" text-gray-800 border-2 border-slate-900 px-6 py-2 rounded-full hover:bg-slate-800 hover:text-white transition"
-        >
-          Apply Now
-        </button>
       </div>
 
       <hr className="my-4" />
