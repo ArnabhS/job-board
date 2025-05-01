@@ -64,7 +64,7 @@ export default function Home() {
   return (
     <div>
       <Hero />
-      <main className="flex mx-auto gap-6 p-6 bg-gray-50 min-h-screen w-full max-w-[90%] font-poppins">
+      <main className="flex flex-col md:flex-row mx-auto gap-6 p-6 bg-gray-50 min-h-screen w-full max-w-[90%] font-poppins">
         <FilterSidebar
           filters={filters}
           setFilters={setFilters}

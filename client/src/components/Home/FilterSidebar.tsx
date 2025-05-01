@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { FiltersType } from "../../types/index";
 
 interface FilterSidebarProps {
@@ -12,8 +12,10 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   setFilters,
   clearFilters,
 }) => {
-  return (
-    <aside className="w-full md:w-1/4 p-4 border rounded-lg shadow bg-white h-fit">
+  const [showModal, setShowModal] = useState(false);
+
+  const FilterForm = (
+    <>
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold">🔎 Filters</h2>
         <button
@@ -143,7 +145,41 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
           <option value="Sales">Sales</option>
         </select>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Desktop Sidebar */}
+      <aside className="hidden md:block w-full md:w-1/4 p-4 border rounded-lg shadow bg-white h-fit">
+        {FilterForm}
+      </aside>
+
+      {/* Mobile Filter Button */}
+      <div className="md:hidden p-4">
+        <button
+          onClick={() => setShowModal(true)}
+          className="bg-black text-white px-4 py-2 rounded-full text-sm"
+        >
+          Filter 
+        </button>
+      </div>
+
+      {/* Mobile Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white p-6 rounded-lg max-h-[90vh] overflow-y-auto w-full max-w-sm relative">
+            <button
+              onClick={() => setShowModal(false)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-black text-lg"
+            >
+              ✕
+            </button>
+            {FilterForm}
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
